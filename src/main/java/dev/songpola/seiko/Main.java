@@ -1,7 +1,12 @@
 package dev.songpola.seiko;
 
+import javax.swing.*;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        SwingUtilities.invokeLater(() -> {
+            var app = new AppFrame("Seiko Project");
+            app.setVisible(true);
+        });
     }
 }

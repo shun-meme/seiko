@@ -1,6 +1,7 @@
 package dev.songpola.seiko;
 
 import com.formdev.flatlaf.IntelliJTheme;
+import dev.songpola.seiko.task.TaskManager;
 
 import javax.swing.*;
 
@@ -8,7 +9,12 @@ public class AppFrame extends JFrame {
     public AppFrame(String title) {
         super(title);
         setup();
-        add(new JLabel("Hello, Seiko!"));
+        addTaskManager();
+    }
+
+    private void addTaskManager() {
+        var taskManagerPanel = new TaskManager();
+        add(taskManagerPanel);
     }
 
     private void setup() {

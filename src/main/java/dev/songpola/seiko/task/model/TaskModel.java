@@ -1,4 +1,4 @@
-package dev.songpola.seiko.task;
+package dev.songpola.seiko.task.model;
 
 import javax.swing.*;
 

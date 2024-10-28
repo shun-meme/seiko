@@ -1,5 +1,7 @@
 package dev.songpola.seiko.task;
 
+import dev.songpola.seiko.task.model.TaskModel;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -10,7 +12,9 @@ public class TaskList extends JPanel {
     public TaskList() {
         super(new BorderLayout());
         taskList = new JList<>(model);
-        add(new JScrollPane(taskList), BorderLayout.CENTER);
+        var scrollPane = new JScrollPane(taskList);
+        taskList.setFocusable(false);
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     public void addTask(String task) {

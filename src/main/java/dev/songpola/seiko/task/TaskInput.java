@@ -1,6 +1,7 @@
 package dev.songpola.seiko.task;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class TaskInput extends JPanel {
@@ -8,6 +9,7 @@ public class TaskInput extends JPanel {
     private JTextField taskField;
 
     public TaskInput(TaskList taskList) {
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.taskList = taskList;
         addTaskField();
         addButtonAddTask();
@@ -16,7 +18,7 @@ public class TaskInput extends JPanel {
     }
 
     private void addTaskField() {
-        taskField = new JTextField(20);
+        taskField = new JTextField();
         add(taskField);
     }
 

@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    application
 }
 
 group = "dev.songpola.seiko"
@@ -15,6 +15,10 @@ dependencies {
 
     implementation("com.formdev:flatlaf:3.5.1")
     implementation("com.formdev:flatlaf-intellij-themes:3.5.1")
+}
+
+application {
+    mainClass = "dev.songpola.seiko.Main"
 }
 
 tasks.test {

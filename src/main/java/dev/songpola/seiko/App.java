@@ -1,12 +1,15 @@
 package dev.songpola.seiko;
 
 import com.formdev.flatlaf.IntelliJTheme;
-import dev.songpola.seiko.task.TaskManager;
-import dev.songpola.seiko.timer.PomodoroTimer;
+import dev.songpola.seiko.task.TaskManagerController;
+import dev.songpola.seiko.task.model.TaskListModel;
+import dev.songpola.seiko.timer.PomodoroTimerController;
 
 import javax.swing.*;
 
 public class App extends JFrame {
+    private final TaskListModel taskListModel = new TaskListModel();
+
     public App(String title) {
         super(title);
         setup();
@@ -26,8 +29,8 @@ public class App extends JFrame {
 
     private void addTabs() {
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Tasks", new TaskManager());
-        tabs.addTab("Timer", new PomodoroTimer());
+        tabs.addTab("Tasks", new TaskManagerController(taskListModel));
+        tabs.addTab("Timer", new PomodoroTimerController(taskListModel));
         tabs.setSelectedIndex(1);
         add(tabs);
     }

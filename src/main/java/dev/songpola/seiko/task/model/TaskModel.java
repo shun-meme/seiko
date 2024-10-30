@@ -3,6 +3,7 @@ package dev.songpola.seiko.task.model;
 public class TaskModel {
     private String title;
     private boolean completed;
+    private int timeSpent;
 
     public TaskModel(String title) {
         this.title = title;
@@ -22,5 +23,13 @@ public class TaskModel {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public int getTimeSpent() {
+        return timeSpent;
+    }
+
+    public void setTimeSpent(int timeSpent) {
+        this.timeSpent = timeSpent;
     }
 }

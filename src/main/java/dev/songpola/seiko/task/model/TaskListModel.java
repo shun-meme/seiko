@@ -16,4 +16,11 @@ public class TaskListModel extends DefaultListModel<TaskModel> {
         task.setCompleted(true);
         set(index, task);
     }
+
+    public void addTimeToFirstTask(int seconds) {
+        if (isEmpty()) return;
+        TaskModel task = get(0);
+        task.setTimeSpent(task.getTimeSpent() + seconds);
+        set(0, task);
+    }
 }

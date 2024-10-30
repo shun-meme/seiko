@@ -15,7 +15,9 @@ public class TaskListCellRenderer extends JLabel implements ListCellRenderer<Tas
         boolean cellHasFocus
     ) {
         var title = value.getTitle();
-        setText(value.isCompleted() ? strikeThrough(title) : title);
+        var timeSpent = value.getTimeSpent();
+        var text = withTimeSpent(title, timeSpent);
+        setText(value.isCompleted() ? strikeThrough(text) : text);
         if (isSelected) {
             setBackground(list.getSelectionBackground());
             setForeground(list.getSelectionForeground());
@@ -25,6 +27,10 @@ public class TaskListCellRenderer extends JLabel implements ListCellRenderer<Tas
         }
         setOpaque(true);
         return this;
+    }
+
+    private String withTimeSpent(String title, int timeSpent) {
+        return timeSpent > 0 ? title + " (" + timeSpent + "s)" : title;
     }
 
     private String strikeThrough(String text) {

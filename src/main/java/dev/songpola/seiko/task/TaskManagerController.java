@@ -8,12 +8,13 @@ import dev.songpola.seiko.task.view.TaskListPanel;
 import javax.swing.*;
 import java.awt.*;
 
-public class TaskManager extends JPanel {
-    private final TaskListModel model = new TaskListModel();
+public class TaskManagerController extends JPanel {
+    private final TaskListModel model;
     private TaskListPanel taskListPanel;
 
-    public TaskManager() {
+    public TaskManagerController(TaskListModel model) {
         super(new BorderLayout());
+        this.model = model;
         setup();
         // TODO: load tasks from file
         // TODO: save tasks to file

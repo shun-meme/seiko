@@ -1,15 +1,17 @@
 package dev.songpola.seiko.timer;
 
+import dev.songpola.seiko.task.model.TaskListModel;
 import dev.songpola.seiko.timer.model.PomodoroState;
 import dev.songpola.seiko.timer.view.TimerControlPanel;
 import dev.songpola.seiko.timer.view.TimerDisplayPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
-public class PomodoroTimer extends JPanel {
+public class PomodoroTimerController extends JPanel {
     private static final int CYCLES_BEFORE_LONG_BREAK = 4;
+
+    private final TaskListModel taskListModel;
 
     private TimerDisplayPanel timerDisplayPanel;
     private Timer timer;
@@ -17,7 +19,8 @@ public class PomodoroTimer extends JPanel {
     private int remainingTime;
     private int cycleCount;
 
-    public PomodoroTimer() {
+    public PomodoroTimerController(TaskListModel taskListModel) {
+        this.taskListModel = taskListModel;
         setup();
         setupTimer();
         setupDisplayPanel();
@@ -66,7 +69,7 @@ public class PomodoroTimer extends JPanel {
 
     private void startWork() {
         JOptionPane.showMessageDialog(
-            PomodoroTimer.this,
+            PomodoroTimerController.this,
             "Break over! Time to work."
         );
         updateState(PomodoroState.WORK);
@@ -74,7 +77,7 @@ public class PomodoroTimer extends JPanel {
 
     private void startShortBreak() {
         JOptionPane.showMessageDialog(
-            PomodoroTimer.this,
+            PomodoroTimerController.this,
             "Short Break Time!"
         );
         updateState(PomodoroState.SHORT_BREAK);
@@ -101,6 +104,13 @@ public class PomodoroTimer extends JPanel {
     private void onUpdateTimer() {
         remainingTime--;
         timerDisplayPanel.update(remainingTime);
+
+        // If it's a work time
+        if (!currentState.isBreak()) {
+            // Add work time to the first task in the task list
+            taskListModel.addTimeToFirstTask(1);
+        }
+
         if (remainingTime <= 0) {
             timer.stop();
             onTimerEnd();

@@ -1,9 +1,14 @@
 package dev.songpola.seiko.timer.model;
 
 public enum PomodoroState {
-    WORK(25 * 60, false),           // Work time in seconds
-    SHORT_BREAK(5 * 60, true),      // Short break time in seconds
-    LONG_BREAK(15 * 60, true);      // Long break time in seconds
+    // WORK(25 * 60, false),           // Work time in seconds
+    // SHORT_BREAK(5 * 60, true),      // Short break time in seconds
+    // LONG_BREAK(15 * 60, true);      // Long break time in seconds
+
+    // FOR DEBUGGING PURPOSES
+    WORK(1, false),           // Work time in seconds
+    SHORT_BREAK(2, true),     // Short break time in seconds
+    LONG_BREAK(3, true);      // Long break time in seconds
 
     private final int duration;
     private final boolean isBreak;

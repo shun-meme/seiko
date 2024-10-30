@@ -10,12 +10,13 @@ import java.awt.event.ActionListener;
 
 public class PomodoroTimer extends JPanel implements ActionListener {
     private static final int CYCLES_BEFORE_LONG_BREAK = 4;
-
     private TimerDisplay timerDisplay;
     private Timer timer;
     private PomodoroState currentState = PomodoroState.WORK; // Start with work time
     private int remainingTime;
-    private int cycleCount;
+    private int cycleCount = 0;
+    private JLabel cycleLabel;
+    private JButton startButton, stopButton, resetButton;
 
     public PomodoroTimer() {
         setup();
@@ -35,7 +36,9 @@ public class PomodoroTimer extends JPanel implements ActionListener {
 
     private void setupDisplay() {
         timerDisplay = new TimerDisplay(remainingTime);
+        cycleLabel = new JLabel("Cycle: " + cycleCount);
         add(timerDisplay);
+        add(cycleLabel);
     }
 
     private void setupControls() {
@@ -43,15 +46,15 @@ public class PomodoroTimer extends JPanel implements ActionListener {
         controls.setLayout(new BoxLayout(controls, BoxLayout.X_AXIS));
         controls.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        var startButton = new JButton("Start");
+        startButton = new JButton("Start");
         startButton.addActionListener(e -> timer.start());
         controls.add(startButton);
 
-        var stopButton = new JButton("Stop");
+        stopButton = new JButton("Stop");
         stopButton.addActionListener(e -> timer.stop());
         controls.add(stopButton);
 
-        var resetButton = new JButton("Reset");
+        resetButton = new JButton("Reset");
         resetButton.addActionListener(e -> {
             timer.stop();
             resetTimer();
@@ -61,41 +64,39 @@ public class PomodoroTimer extends JPanel implements ActionListener {
         add(controls);
     }
 
+    private void incrementCycle() {
+        cycleCount++;
+        cycleLabel.setText("Cycle: " + ((cycleCount - 1) % CYCLES_BEFORE_LONG_BREAK + 1));
+        if (cycleCount % CYCLES_BEFORE_LONG_BREAK == 0) {
+            JOptionPane.showMessageDialog(this, "Long break time! Total cycles completed: " + (cycleCount / CYCLES_BEFORE_LONG_BREAK));
+        }
+    }
+
     private void onTimerEnd() {
-        if (currentState.isBreak()) {
-            startWork(); // Break is over, time to work
-        } else {
-            // Work is over, time for a break
-            cycleCount++;
+        if (currentState == PomodoroState.WORK) {
+            incrementCycle();
             if (cycleCount % CYCLES_BEFORE_LONG_BREAK == 0) {
-                startLongBreak(); // Long break after some work cycles
+                startLongBreak();
             } else {
                 startShortBreak();
             }
+        } else {
+            startWork();
         }
     }
 
     private void startWork() {
-        JOptionPane.showMessageDialog(
-            PomodoroTimer.this,
-            "Break over! Time to work."
-        );
+        JOptionPane.showMessageDialog(this, "Break over! Time to work.");
         updateState(PomodoroState.WORK);
     }
 
     private void startShortBreak() {
-        JOptionPane.showMessageDialog(
-            PomodoroTimer.this,
-            "Short Break Time!"
-        );
+        JOptionPane.showMessageDialog(this, "Short Break Time!");
         updateState(PomodoroState.SHORT_BREAK);
     }
 
     private void startLongBreak() {
-        JOptionPane.showMessageDialog(
-            this,
-            "Long Break Time!"
-        );
+        JOptionPane.showMessageDialog(this, "Long Break Time!");
         updateState(PomodoroState.LONG_BREAK);
     }
 

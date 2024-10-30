@@ -1,35 +1,50 @@
 package dev.songpola.seiko.task;
 
-import dev.songpola.seiko.task.model.TaskModel;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.*;
-import java.awt.*;
-
-public class TaskList extends JPanel {
-    private final TaskModel model = new TaskModel();
-    private final JList<String> taskList;
+public class TaskList {
+    private final List<Task> tasks;
+    private int selectedIndex;
 
     public TaskList() {
-        super(new BorderLayout());
-        taskList = new JList<>(model);
-        var scrollPane = new JScrollPane(taskList);
-        taskList.setFocusable(false);
-        add(scrollPane, BorderLayout.CENTER);
+        tasks = new ArrayList<>();
+        selectedIndex = -1;
     }
 
-    public void addTask(String task) {
-        model.addTask(task);
-    }
-
-    public void removeTask(int index) {
-        model.removeTask(index);
-    }
-
-    public void markTaskAsCompleted(int index) {
-        model.markTaskAsCompleted(index);
+    public void addTask(Task task) {
+        tasks.add(task);
     }
 
     public int getSelectedIndex() {
-        return taskList.getSelectedIndex();
+        return selectedIndex;
+    }
+
+    public void setSelectedIndex(int index) {
+        if (index >= 0 && index < tasks.size()) {
+            selectedIndex = index;
+        } else {
+            selectedIndex = -1;
+        }
+    }
+
+    public void removeTask(int index) {
+        if (index >= 0 && index < tasks.size()) {
+            tasks.remove(index);
+            if (selectedIndex == index) {
+                selectedIndex = -1;
+            }
+        }
+    }
+
+    public void markTaskAsCompleted(int index) {
+        if (index >= 0 && index < tasks.size()) {
+            Task task = tasks.get(index);
+            task.setCompleted(true);
+        }
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
     }
 }

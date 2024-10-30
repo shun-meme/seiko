@@ -15,6 +15,7 @@ dependencies {
 
     implementation("com.formdev:flatlaf:3.5.1")
     implementation("com.formdev:flatlaf-intellij-themes:3.5.1")
+    implementation("com.opencsv:opencsv:5.5.2")
 }
 
 application {

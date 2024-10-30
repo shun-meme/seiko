@@ -1,18 +1,26 @@
 package dev.songpola.seiko.task.model;
 
-import javax.swing.*;
+public class TaskModel {
+    private String title;
+    private boolean completed;
 
-public class TaskModel extends DefaultListModel<String> {
-    public void addTask(String task) {
-        addElement(task);
+    public TaskModel(String title) {
+        this.title = title;
     }
 
-    public void removeTask(int index) {
-        remove(index);
+    public String getTitle() {
+        return title;
     }
 
-    public void markTaskAsCompleted(int index) {
-        String task = getElementAt(index);
-        set(index, task + " (Completed)");
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 }

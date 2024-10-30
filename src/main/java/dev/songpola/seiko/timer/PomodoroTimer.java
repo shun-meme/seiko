@@ -1,7 +1,8 @@
 package dev.songpola.seiko.timer;
 
 import dev.songpola.seiko.timer.model.PomodoroState;
-import dev.songpola.seiko.timer.view.TimerDisplay;
+import dev.songpola.seiko.timer.view.TimerControlPanel;
+import dev.songpola.seiko.timer.view.TimerDisplayPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +12,7 @@ import java.awt.event.ActionListener;
 public class PomodoroTimer extends JPanel implements ActionListener {
     private static final int CYCLES_BEFORE_LONG_BREAK = 4;
 
-    private TimerDisplay timerDisplay;
+    private TimerDisplayPanel timerDisplayPanel;
     private Timer timer;
     private PomodoroState currentState = PomodoroState.WORK; // Start with work time
     private int remainingTime;
@@ -20,12 +21,12 @@ public class PomodoroTimer extends JPanel implements ActionListener {
     public PomodoroTimer() {
         setup();
         setupTimer();
-        setupDisplay();
-        setupControls();
+        setupDisplayPanel();
+        setupControlPanel();
     }
 
     private void setup() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setLayout(new BorderLayout());
     }
 
     private void setupTimer() {
@@ -33,32 +34,21 @@ public class PomodoroTimer extends JPanel implements ActionListener {
         remainingTime = currentState.getDuration();
     }
 
-    private void setupDisplay() {
-        timerDisplay = new TimerDisplay(remainingTime);
-        add(timerDisplay);
+    private void setupDisplayPanel() {
+        timerDisplayPanel = new TimerDisplayPanel(remainingTime);
+        add(timerDisplayPanel, BorderLayout.CENTER);
     }
 
-    private void setupControls() {
-        var controls = new JPanel();
-        controls.setLayout(new BoxLayout(controls, BoxLayout.X_AXIS));
-        controls.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        var startButton = new JButton("Start");
-        startButton.addActionListener(e -> timer.start());
-        controls.add(startButton);
-
-        var stopButton = new JButton("Stop");
-        stopButton.addActionListener(e -> timer.stop());
-        controls.add(stopButton);
-
-        var resetButton = new JButton("Reset");
-        resetButton.addActionListener(e -> {
-            timer.stop();
-            resetTimer();
-        });
-        controls.add(resetButton);
-
-        add(controls);
+    private void setupControlPanel() {
+        var controls = new TimerControlPanel(
+            (e) ->  timer.start(),
+            (e) -> timer.stop(),
+            (e) -> {
+                timer.stop();
+                resetTimer();
+            }
+        );
+        add(controls, BorderLayout.SOUTH);
     }
 
     private void onTimerEnd() {
@@ -106,7 +96,7 @@ public class PomodoroTimer extends JPanel implements ActionListener {
 
     private void resetTimer() {
         remainingTime = currentState.getDuration();
-        timerDisplay.update(remainingTime);
+        timerDisplayPanel.update(remainingTime);
     }
 
     @Override
@@ -116,7 +106,7 @@ public class PomodoroTimer extends JPanel implements ActionListener {
 
     private void updateTimer() {
         remainingTime--;
-        timerDisplay.update(remainingTime);
+        timerDisplayPanel.update(remainingTime);
         if (remainingTime <= 0) {
             timer.stop();
             onTimerEnd();

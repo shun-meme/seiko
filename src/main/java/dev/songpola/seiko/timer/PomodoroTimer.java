@@ -7,9 +7,8 @@ import dev.songpola.seiko.timer.view.TimerDisplayPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class PomodoroTimer extends JPanel implements ActionListener {
+public class PomodoroTimer extends JPanel {
     private static final int CYCLES_BEFORE_LONG_BREAK = 4;
 
     private TimerDisplayPanel timerDisplayPanel;
@@ -30,7 +29,7 @@ public class PomodoroTimer extends JPanel implements ActionListener {
     }
 
     private void setupTimer() {
-        timer = new Timer(1000, this);
+        timer = new Timer(1000, e -> this.onUpdateTimer());
         remainingTime = currentState.getDuration();
     }
 
@@ -99,12 +98,7 @@ public class PomodoroTimer extends JPanel implements ActionListener {
         timerDisplayPanel.update(remainingTime);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        updateTimer();
-    }
-
-    private void updateTimer() {
+    private void onUpdateTimer() {
         remainingTime--;
         timerDisplayPanel.update(remainingTime);
         if (remainingTime <= 0) {

@@ -16,8 +16,6 @@ public class TaskManagerController extends JPanel {
         super(new BorderLayout());
         this.model = model;
         setup();
-        // TODO: load tasks from file
-        // TODO: save tasks to file
     }
 
     private void setup() {

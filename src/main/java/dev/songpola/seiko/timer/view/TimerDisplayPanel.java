@@ -1,17 +1,43 @@
 package dev.songpola.seiko.timer.view;
 
 import javax.swing.*;
+import java.awt.*;
 
-public class TimerDisplayPanel extends JLabel {
-    public TimerDisplayPanel(int seconds) {
-        setHorizontalAlignment(JLabel.CENTER);
-        setFont(getFont().deriveFont(48f));
-        update(seconds);
+import static dev.songpola.seiko.timer.model.PomodoroState.CYCLES_BEFORE_LONG_BREAK;
+
+public class TimerDisplayPanel extends JPanel {
+
+    private final JLabel labelRemainingTime;
+    private final JLabel labelCycleCount;
+
+    public TimerDisplayPanel(int seconds, int cycleCount) {
+        setLayout(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.weighty = 1;
+        gbc.anchor = GridBagConstraints.CENTER;
+        // gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.gridy = 0;
+        labelRemainingTime = new JLabel();
+        labelRemainingTime.setFont(getFont().deriveFont(48f));
+        updateTime(seconds);
+        add(labelRemainingTime, gbc);
+
+        gbc.gridy = 1;
+        labelCycleCount = new JLabel();
+        updateCycle(cycleCount);
+        add(labelCycleCount, gbc);
     }
 
-    public void update(int seconds) {
+    public void updateTime(int seconds) {
         int m = seconds / 60;
         int s = seconds % 60;
-        setText(String.format("%02d:%02d", m, s));
+        labelRemainingTime.setText(String.format("%02d:%02d", m, s));
+    }
+
+    public void updateCycle(int count) {
+        labelCycleCount.setText(count + " / " + CYCLES_BEFORE_LONG_BREAK);
     }
 }

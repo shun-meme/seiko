@@ -10,6 +10,8 @@ public enum PomodoroState {
     SHORT_BREAK(2, true),     // Short break time in seconds
     LONG_BREAK(3, true);      // Long break time in seconds
 
+    public static final int CYCLES_BEFORE_LONG_BREAK = 4;
+
     private final int duration;
     private final boolean isBreak;
 

@@ -1,11 +1,11 @@
 package dev.songpola.seiko.timer.view;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 
-public class TimerDisplay extends JLabel {
-    public TimerDisplay(int seconds) {
+public class TimerDisplayPanel extends JLabel {
+    public TimerDisplayPanel(int seconds) {
         setHorizontalAlignment(JLabel.CENTER);
+        setFont(getFont().deriveFont(48f));
         update(seconds);
     }
 

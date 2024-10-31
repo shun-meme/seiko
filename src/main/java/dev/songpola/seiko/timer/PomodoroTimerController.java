@@ -1,70 +1,62 @@
 package dev.songpola.seiko.timer;
 
+import dev.songpola.seiko.task.model.TaskListModel;
 import dev.songpola.seiko.timer.model.PomodoroState;
-import dev.songpola.seiko.timer.view.TimerDisplay;
+import dev.songpola.seiko.timer.view.TimerControlPanel;
+import dev.songpola.seiko.timer.view.TimerDisplayPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class PomodoroTimer extends JPanel implements ActionListener {
+public class PomodoroTimerController extends JPanel {
     private static final int CYCLES_BEFORE_LONG_BREAK = 4;
-    private TimerDisplay timerDisplay;
+
+    private final TaskListModel taskListModel;
+
+    private TimerDisplayPanel timerDisplayPanel;
     private Timer timer;
     private PomodoroState currentState = PomodoroState.WORK; // Start with work time
     private int remainingTime;
     private int cycleCount = 0;
     private JLabel cycleLabel;
-    private JButton startButton, stopButton, resetButton;
 
-    public PomodoroTimer() {
+    public PomodoroTimerController(TaskListModel taskListModel) {
+        this.taskListModel = taskListModel;
         setup();
         setupTimer();
-        setupDisplay();
-        setupControls();
+        setupDisplayPanel();
+        setupControlPanel();
     }
 
     private void setup() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setLayout(new BorderLayout());
     }
 
     private void setupTimer() {
-        timer = new Timer(1000, this);
+        timer = new Timer(1000, e -> this.onUpdateTimer());
         remainingTime = currentState.getDuration();
     }
 
-    private void setupDisplay() {
-        timerDisplay = new TimerDisplay(remainingTime);
+    private void setupDisplayPanel() {
+        timerDisplayPanel = new TimerDisplayPanel(remainingTime);
         cycleLabel = new JLabel("Cycle: " + cycleCount);
-        add(timerDisplay);
+        add(timerDisplayPanel, BorderLayout.CENTER);
         add(cycleLabel);
     }
 
-    private void setupControls() {
-        var controls = new JPanel();
-        controls.setLayout(new BoxLayout(controls, BoxLayout.X_AXIS));
-        controls.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        startButton = new JButton("Start");
-        startButton.addActionListener(e -> timer.start());
-        controls.add(startButton);
-
-        stopButton = new JButton("Stop");
-        stopButton.addActionListener(e -> timer.stop());
-        controls.add(stopButton);
-
-        resetButton = new JButton("Reset");
-        resetButton.addActionListener(e -> {
-            timer.stop();
-            resetTimer();
-        });
-        controls.add(resetButton);
-
-        add(controls);
+    private void setupControlPanel() {
+        var controls = new TimerControlPanel(
+            (e) ->  timer.start(),
+            (e) -> timer.stop(),
+            (e) -> {
+                timer.stop();
+                resetTimer();
+            }
+        );
+        add(controls, BorderLayout.SOUTH);
     }
 
-    private void incrementCycle() {
+    private void increaseCycle() {
         cycleCount++;
         cycleLabel.setText("Cycle: " + ((cycleCount - 1) % CYCLES_BEFORE_LONG_BREAK + 1));
         if (cycleCount % CYCLES_BEFORE_LONG_BREAK == 0) {
@@ -73,15 +65,16 @@ public class PomodoroTimer extends JPanel implements ActionListener {
     }
 
     private void onTimerEnd() {
-        if (currentState == PomodoroState.WORK) {
-            incrementCycle();
+        if (currentState.isBreak()) {
+            startWork(); // Break is over, time to work
+        } else {
+            // Work is over, time for a break
+            increaseCycle();
             if (cycleCount % CYCLES_BEFORE_LONG_BREAK == 0) {
-                startLongBreak();
+                startLongBreak(); // Long break after some work cycles
             } else {
                 startShortBreak();
             }
-        } else {
-            startWork();
         }
     }
 
@@ -107,17 +100,19 @@ public class PomodoroTimer extends JPanel implements ActionListener {
 
     private void resetTimer() {
         remainingTime = currentState.getDuration();
-        timerDisplay.update(remainingTime);
+        timerDisplayPanel.update(remainingTime);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        updateTimer();
-    }
-
-    private void updateTimer() {
+    private void onUpdateTimer() {
         remainingTime--;
-        timerDisplay.update(remainingTime);
+        timerDisplayPanel.update(remainingTime);
+
+        // If it's a work time
+        if (!currentState.isBreak()) {
+            // Add work time to the first task in the task list
+            taskListModel.addTimeToFirstTask(1);
+        }
+
         if (remainingTime <= 0) {
             timer.stop();
             onTimerEnd();

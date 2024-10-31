@@ -51,7 +51,8 @@ public class App extends JFrame {
             for (var line : lines) {
                 String title = line[0];
                 boolean completed = Boolean.parseBoolean(line[1]);
-                taskListModel.addTask(new TaskModel(title, completed));
+                int timeSpent = Integer.parseInt(line[2]);
+                taskListModel.addTask(new TaskModel(title, completed, timeSpent));
             }
         } catch (FileNotFoundException e) {
             System.err.println("No existing tasks file found. Creating new tasks file: " + path);
@@ -69,7 +70,8 @@ public class App extends JFrame {
                 var taskModel = (TaskModel) task;
                 String[] line = {
                     taskModel.getTitle(),
-                    String.valueOf(taskModel.isCompleted())
+                    String.valueOf(taskModel.isCompleted()),
+                    String.valueOf(taskModel.getTimeSpent())
                 };
                 writer.writeNext(line);
             }

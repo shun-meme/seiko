@@ -12,12 +12,13 @@ import static dev.songpola.seiko.timer.model.PomodoroState.CYCLES_BEFORE_LONG_BR
 
 public class PomodoroTimerController extends JPanel {
     private final TaskListModel taskListModel;
+
+    private PomodoroState currentState = PomodoroState.WORK; // Start with work time
     private int cycleCount = 1;
+    private int remainingTime;
 
     private TimerDisplayPanel timerDisplayPanel;
     private Timer timer;
-    private PomodoroState currentState = PomodoroState.WORK; // Start with work time
-    private int remainingTime;
 
     public PomodoroTimerController(TaskListModel taskListModel) {
         this.taskListModel = taskListModel;

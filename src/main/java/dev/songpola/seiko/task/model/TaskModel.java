@@ -9,6 +9,12 @@ public class TaskModel {
         this.title = title;
     }
 
+    public TaskModel(String title, boolean completed, int timeSpent) {
+        this.title = title;
+        this.completed = completed;
+        this.timeSpent = timeSpent;
+    }
+
     public String getTitle() {
         return title;
     }

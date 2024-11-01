@@ -8,8 +8,8 @@ public class PomodoroState {
     private int duration;
     private final boolean isBreak;
 
-    // Private constructor to prevent instantiation
-    private PomodoroState(int duration, boolean isBreak) {
+    // Public constructor to allow instantiation with any duration
+    public PomodoroState(int duration, boolean isBreak) {
         this.duration = duration;
         this.isBreak = isBreak;
     }
@@ -23,19 +23,37 @@ public class PomodoroState {
     }
 
     public void setDuration(int duration) {
-        this.duration = duration;
+        this.duration = duration; // Allow changing to any duration
     }
 
-    // Static method to determine the PomodoroState based on duration
+    // Static factory methods for default states
+    public static PomodoroState getDefaultWork() {
+        return WORK;
+    }
+
+    public static PomodoroState getDefaultShortBreak() {
+        return SHORT_BREAK;
+    }
+
+    public static PomodoroState getDefaultLongBreak() {
+        return LONG_BREAK;
+    }
+
+    // Method to check if a duration is valid (if you want to keep predefined validation)
+    public static boolean isValidDuration(int duration) {
+        return duration > 0; // Allow any positive duration
+    }
+
     public static PomodoroState fromDuration(int duration) {
-        if (duration == WORK.getDuration()) {
-            return WORK;
-        } else if (duration == SHORT_BREAK.getDuration()) {
-            return SHORT_BREAK;
-        } else if (duration == LONG_BREAK.getDuration()) {
-            return LONG_BREAK;
-        } else {
-            throw new IllegalArgumentException("Invalid duration: " + duration);
+        // Create a new PomodoroState with the specified duration
+        if (isValidDuration(duration)) {
+            return new PomodoroState(duration, duration == SHORT_BREAK.getDuration() || duration == LONG_BREAK.getDuration());
         }
+        throw new IllegalArgumentException("Invalid duration: " + duration);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("PomodoroState{duration=%d, isBreak=%s}", duration, isBreak);
     }
 }

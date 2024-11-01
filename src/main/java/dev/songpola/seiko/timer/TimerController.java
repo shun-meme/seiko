@@ -15,22 +15,7 @@ public class TimerController extends JPanel {
 
     private void setup() {
         setLayout(new BorderLayout());
-        add(timer.getView(), BorderLayout.CENTER);
-
-        // Add a button or a menu item to open the TimerSetting
-        JButton settingsButton = new JButton("Settings");
-        settingsButton.addActionListener(e -> openSettings()); // Action to open settings
-        add(settingsButton, BorderLayout.SOUTH); // Place the button at the bottom
-    }
-
-    private void openSettings() {
-        // Create the TimerSetting window when the button is clicked
-        TimerSetting settingsView = new TimerSetting(timer.getModel().getCurrentState(), this::updateTimerSettings);
-        settingsView.setVisible(true); // Show the settings window
-    }
-
-    public void updateTimerSettings(int newDuration) {
-        timer.getModel().updateDuration(newDuration); // Update the timer model with new duration
+        add(timer, BorderLayout.CENTER);
     }
 
     public static void main(String[] args) {

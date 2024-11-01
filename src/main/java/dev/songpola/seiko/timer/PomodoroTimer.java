@@ -1,7 +1,9 @@
 package dev.songpola.seiko.timer;
 
 import dev.songpola.seiko.timer.model.PomodoroState;
-import dev.songpola.seiko.timer.view.TimerDisplay; // Changed to TimerDisplay from TimerView
+import dev.songpola.seiko.timer.model.TimerModel;
+import dev.songpola.seiko.timer.view.TimerDisplay;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,15 +12,15 @@ import java.awt.event.ActionListener;
 public class PomodoroTimer extends JPanel implements ActionListener {
     private static final int CYCLES_BEFORE_LONG_BREAK = 4;
 
-    private TimerDisplay timerDisplay; // Changed to TimerDisplay
+    private TimerDisplay timerDisplay;
     private Timer timer;
-    private PomodoroState currentState = PomodoroState.WORK; // Start with work time
-    private int remainingTime;
-    private int cycleCount;
+    private TimerModel timerModel; // Use the TimerModel class
     private JButton toggleButton; // Single button for Start/Stop
     private JButton settingsButton; // Stylish settings button
 
     public PomodoroTimer() {
+        // Initialize with DEFAULT_WORK state
+        timerModel = new TimerModel(PomodoroState.getDefaultWork());
         setup();
         setupTimer();
         setupDisplay();
@@ -32,11 +34,10 @@ public class PomodoroTimer extends JPanel implements ActionListener {
 
     private void setupTimer() {
         timer = new Timer(1000, this); // Timer updates every 1000 ms (1 second)
-        remainingTime = currentState.getDuration();
     }
 
     private void setupDisplay() {
-        timerDisplay = new TimerDisplay(remainingTime);
+        timerDisplay = new TimerDisplay(timerModel.getRemainingTime());
         timerDisplay.setFont(new Font("SansSerif", Font.BOLD, 90)); // Set larger font for timer display
         timerDisplay.setBorder(BorderFactory.createEmptyBorder()); // Remove any border
         add(timerDisplay, BorderLayout.CENTER); // Position it in the center
@@ -68,8 +69,12 @@ public class PomodoroTimer extends JPanel implements ActionListener {
         settingsButton.setFont(new Font("SansSerif", Font.BOLD, 20));
         settingsButton.setForeground(Color.WHITE);
         settingsButton.setFocusPainted(false);
-        settingsButton.setContentAreaFilled(false);
-        settingsButton.setBorder(BorderFactory.createEmptyBorder()); // Remove default border
+        settingsButton.setContentAreaFilled(true); // Allow background color to show
+        settingsButton.setBackground(new Color(150, 50, 150)); // Set a different shade of purple
+
+        // Set rounded edges by creating a rounded border
+        settingsButton.setBorder(BorderFactory.createLineBorder(new Color(100, 0, 100), 2)); // Border color and thickness
+        settingsButton.setBorderPainted(true);
 
         // Add action listener to the settings button
         settingsButton.addActionListener(e -> openTimerSettings());
@@ -81,7 +86,7 @@ public class PomodoroTimer extends JPanel implements ActionListener {
     }
 
     private void openTimerSettings() {
-        new TimerSetting(currentState, this::updateMainTimerDisplay).setVisible(true); // Open the TimerSetting window
+        new TimerSetting(timerModel.getCurrentState(), this::updateMainTimerDisplay).setVisible(true); // Open the TimerSetting window
     }
 
     private void toggleTimer() {
@@ -95,57 +100,53 @@ public class PomodoroTimer extends JPanel implements ActionListener {
     }
 
     private void onTimerEnd() {
-        if (currentState.isBreak()) {
+        if (timerModel.getCurrentState().isBreak()) {
             startWork(); // Break is over, time to work
         } else {
             // Work is over, time for a break
-            cycleCount++;
-            if (cycleCount % CYCLES_BEFORE_LONG_BREAK == 0) {
-                startLongBreak(); // Long break after some work cycles
+            if ((timerModel.getCurrentState() == PomodoroState.getDefaultWork())) {
+                timerModel.updateState(PomodoroState.getDefaultShortBreak());
+                startShortBreak(); // Start short break
             } else {
-                startShortBreak();
+                startLongBreak(); // Long break after some work cycles
             }
         }
+        resetTimer(); // Reset timer after state change
     }
 
     private void startWork() {
         JOptionPane.showMessageDialog(this, "Break over! Time to work.");
-        updateState(PomodoroState.WORK);
+        timerModel.updateState(PomodoroState.getDefaultWork());
     }
 
     private void startShortBreak() {
         JOptionPane.showMessageDialog(this, "Short Break Time!");
-        updateState(PomodoroState.SHORT_BREAK);
+        timerModel.updateState(PomodoroState.getDefaultShortBreak());
     }
 
     private void startLongBreak() {
         JOptionPane.showMessageDialog(this, "Long Break Time!");
-        updateState(PomodoroState.LONG_BREAK);
-    }
-
-    private void updateState(PomodoroState newState) {
-        currentState = newState;
-        resetTimer();
+        timerModel.updateState(PomodoroState.getDefaultLongBreak());
     }
 
     private void resetTimer() {
-        remainingTime = currentState.getDuration();
-        timerDisplay.update(remainingTime);
+        timerModel.reset();
+        timerDisplay.update(timerModel.getRemainingTime());
         repaint(); // Repaint to update the display
     }
 
     private void updateMainTimerDisplay(int adjustedTime) {
-        timerDisplay.update(adjustedTime); // Update the main timer display when adjusted time changes
-        remainingTime = adjustedTime; // Update remaining time for consistency
+        timerModel.updateDuration(adjustedTime); // Update the model with new duration
+        timerDisplay.update(timerModel.getRemainingTime()); // Update the display
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (remainingTime > 0) {
-            remainingTime--;
-            timerDisplay.update(remainingTime);
+        timerModel.tick(); // Tick the model
+        if (timerModel.getRemainingTime() <= 0) {
+            onTimerEnd(); // Handle timer end
         } else {
-            onTimerEnd();
+            timerDisplay.update(timerModel.getRemainingTime()); // Update the display
         }
     }
 
